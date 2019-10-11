@@ -18,4 +18,5 @@ public final class JSPPageName {
 	public static final String ERROR_ACCESS_DENIED_PAGE = "/WEB-INF/jsp/error_403.jsp";
 	public static final String PLANS_PAGE = "/WEB-INF/jsp/plans.jsp";
 	public static final String CONTACT_US = "/WEB-INF/jsp/contact_us.jsp";
+	public static final String PAGINATION = "/WEB-INF/jsp/pagination.jsp";
 }

@@ -22,6 +22,8 @@ public final class RequestParameterName {
 	public static final String REQ_PARAM_PHONE_NUMBER = "phoneNumber";
 	public static final String REQ_PARAM_CHARGE_AMOUNT = "charge";
 	public static final String REQ_PARAM_ACCOUNT_ID = "accountID";
+	public static final String REQ_PARAM_LANGUAGE = "language";
+	public static final String REQ_PARAM_REQUEST_LOCATION = "sitelocation";
 	
 
 }

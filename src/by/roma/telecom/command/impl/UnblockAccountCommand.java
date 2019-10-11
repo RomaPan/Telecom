@@ -1,26 +1,31 @@
 package by.roma.telecom.command.impl;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import by.roma.telecom.bean.User;
+import org.apache.log4j.Logger;
+import by.roma.telecom.bean.Account;
 import by.roma.telecom.command.Command;
 import by.roma.telecom.controller.JSPPageName;
+import by.roma.telecom.controller.RequestParameterName;
+import by.roma.telecom.service.AccountService;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
-import by.roma.telecom.service.UserService;
 import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
-public class GetListOfAllUsersCommand implements Command {
+public class UnblockAccountCommand implements Command {
+
+	private static final Logger LOGGER = Logger.getLogger(SetUserAdminRoleCommand.class);
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+		Account account;
+		String accountID;
 
 		HttpSession session = request.getSession(false);
 
@@ -28,29 +33,33 @@ public class GetListOfAllUsersCommand implements Command {
 
 			SessionMessageCleaner.cleanMessageAttributes(session);
 
-			try {
+			accountID = request.getParameter(RequestParameterName.REQ_PARAM_ACCOUNT_ID);
 
-				List<User> usersList;
-				UserService userService = ServiceProvider.getInstance().getUserService();
-				usersList = userService.getListOfAllUsers();
+			AccountService accountService = ServiceProvider.getInstance().getAccountService();
 
-				if (null == usersList) {
-					session.setAttribute("UsersListMessage", "Something went wrong, please try again later");
-					response.sendRedirect("controller?command=go-to-admin-auth-page");
-					return;
-				}
-
-				session.setAttribute("usersList", usersList);
-				session.setAttribute("UsersListMessage", "List of All users in DB");
+			if (accountID.isEmpty()) {
+				session.setAttribute("AccountBlockMessage", "No account ID selected");
 				response.sendRedirect("controller?command=go-to-admin-auth-page");
-			} catch (ServiceException e) {
-				e.printStackTrace();
+				return;
 			}
+
+			try {
+				account = accountService.unblockAccount(accountID);
+
+				session.setAttribute("account", account);
+				session.setAttribute("AccountBlockMessage", "Account is unblocked");
+				response.sendRedirect("controller?command=go-to-admin-auth-page");
+
+			} catch (ServiceException e) {
+				LOGGER.error("Service Exception occurred:  failed to unblock account.");
+			}
+
 		} else {
 			request.setAttribute("Message", "Session timed out, please sign in");
 			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.LOGIN_PAGE);
 			dispatcher.forward(request, response);
 		}
+
 	}
 
 }

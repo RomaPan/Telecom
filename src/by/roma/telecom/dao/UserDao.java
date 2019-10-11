@@ -8,7 +8,6 @@ import by.roma.telecom.bean.User;
 
 public interface UserDao {
 
-	// CRUD principles - create, read, update, delete.
 
 	public User authorization(String login, String password) throws DaoException;
 
@@ -22,6 +21,8 @@ public interface UserDao {
 	
 	public User searchUserByID(int id) throws DaoException;
 	
+	public User searchUserByEmail(String email) throws DaoException;
+	
 	public User changeUserRole(int id) throws DaoException;
 	
 	public List<String> getAvailablePhoneNumbers() throws DaoException;
@@ -32,7 +33,6 @@ public interface UserDao {
 	
 	public List<User> getListOfAllUsers() throws DaoException;
 	
-
 	public void deleteUser(int id) throws SQLException, ClassNotFoundException, DaoException;
 
 

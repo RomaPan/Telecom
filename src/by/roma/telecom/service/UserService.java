@@ -19,6 +19,8 @@ public interface UserService {
 	
 	public User searchByID(String userID) throws ServiceException;
 	
+	public User searchByEmail(String userEmail) throws ServiceException;
+	
 	public  List<String> getAvailablePhoneNumbers() throws ServiceException;
 	
 	public User changeUserRole(String userID) throws ServiceException;

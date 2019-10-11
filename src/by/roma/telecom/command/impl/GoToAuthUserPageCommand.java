@@ -23,26 +23,26 @@ public class GoToAuthUserPageCommand implements Command {
 		Account account = null;
 		User user;
 		String profileUpdate;
-		
+
 		AccountService accountService = ServiceProvider.getInstance().getAccountService();
-		
+
 		HttpSession session = request.getSession(false);
 
 		if (session != null) {
 
 			if (session.getAttribute("user") != null) {
-				
-				user = (User)session.getAttribute("user");
-				
-				profileUpdate = (String)session.getAttribute("ProfileUpdate");
-		
+
+				user = (User) session.getAttribute("user");
+
+				profileUpdate = (String) session.getAttribute("ProfileUpdate");
+
 				int accID = user.getUserID();
 				String accountID = Integer.toString(accID);
 
 				try {
 					account = accountService.getAccountDetails(accountID);
 
-				}catch (ServiceException e) {
+				} catch (ServiceException e) {
 					e.printStackTrace();
 				}
 				session.setAttribute("user", user);
@@ -64,7 +64,6 @@ public class GoToAuthUserPageCommand implements Command {
 			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.ERROR_ACCESS_DENIED_PAGE);
 			dispatcher.forward(request, response);
 		}
-		
 
 	}
 

@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import by.roma.telecom.command.impl.AuthorizationCommand;
-import by.roma.telecom.command.impl.BlockUserAccountCommand;
+import by.roma.telecom.command.impl.BlockAccountCommand;
 import by.roma.telecom.command.impl.BlockUserCommand;
 import by.roma.telecom.command.impl.ChangePassCommand;
 import by.roma.telecom.command.impl.ChangePhoneNumberCommand;
 import by.roma.telecom.command.impl.ClearListOfAllUsersCommand;
 import by.roma.telecom.command.impl.ConnectPhoneNumberCommand;
 import by.roma.telecom.command.impl.FindAccountByIDCommand;
+import by.roma.telecom.command.impl.FindUserByEmailCommand;
 import by.roma.telecom.command.impl.FindUserByIDCommand;
 import by.roma.telecom.command.impl.GetListOfAllUsersCommand;
 import by.roma.telecom.command.impl.GetListOfAvailableNumbersCommand;
@@ -21,10 +22,12 @@ import by.roma.telecom.command.impl.GoToError403PageCommand;
 import by.roma.telecom.command.impl.GoToError404PageCommand;
 import by.roma.telecom.command.impl.GoToIndexPageCommand;
 import by.roma.telecom.command.impl.GoToLoginPageCommand;
+import by.roma.telecom.command.impl.GoToPaginationCommand;
 import by.roma.telecom.command.impl.GoToPlansPageCommand;
 import by.roma.telecom.command.impl.GoToRegStepThreeCommand;
 import by.roma.telecom.command.impl.GoToRegStepTwoCommand;
 import by.roma.telecom.command.impl.GoToRegistrationPageCommand;
+import by.roma.telecom.command.impl.LocalizationCommand;
 import by.roma.telecom.command.impl.NoSuchCommand;
 import by.roma.telecom.command.impl.UpdateProfileCommand;
 import by.roma.telecom.command.impl.ViewAvailablePhoneNumberCommand;
@@ -32,7 +35,7 @@ import by.roma.telecom.command.impl.RegistrationCommand;
 import by.roma.telecom.command.impl.SetCallPlanCommand;
 import by.roma.telecom.command.impl.SetUserAdminRoleCommand;
 import by.roma.telecom.command.impl.SignOutCommand;
-import by.roma.telecom.command.impl.UnblockUserAccountCommand;
+import by.roma.telecom.command.impl.UnblockAccountCommand;
 import by.roma.telecom.command.impl.UnblockUserCommand;
 
 public class CommandHelper {
@@ -70,8 +73,11 @@ public class CommandHelper {
 		commands.put(CommandName.UNBLOCK_USER, new UnblockUserCommand());
 		commands.put(CommandName.CLEAR_LIST_OF_ALL_USERS, new ClearListOfAllUsersCommand());
 		commands.put(CommandName.FIND_ACCOUNT_BY_ID, new FindAccountByIDCommand());
-		commands.put(CommandName.BLOCK_USER_ACCOUNT, new BlockUserAccountCommand());
-		commands.put(CommandName.UNBLOCK_USER_ACCOUNT, new UnblockUserAccountCommand());
+		commands.put(CommandName.BLOCK_ACCOUNT, new BlockAccountCommand());
+		commands.put(CommandName.UNBLOCK_ACCOUNT, new UnblockAccountCommand());
+		commands.put(CommandName.LOCALIZE, new LocalizationCommand());
+		commands.put(CommandName.GO_TO_PAGINATION, new GoToPaginationCommand());
+		commands.put(CommandName.FIND_USER_BY_EMAIL, new FindUserByEmailCommand());
 	}
 
 	public static CommandHelper getInstance() {
@@ -83,7 +89,7 @@ public class CommandHelper {
 		Command command;
 		CommandName name;
 
-		if (commandName.isEmpty()) {
+		if (commandName == null || commandName.isEmpty()) {
 			command = commands.get(CommandName.GO_TO_ERROR_404_PAGE);
 			return command;
 		} else if (!contains(commandName)) {

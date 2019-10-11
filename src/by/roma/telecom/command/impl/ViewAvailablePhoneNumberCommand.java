@@ -31,8 +31,6 @@ public class ViewAvailablePhoneNumberCommand implements Command {
 			numbers = userService.getAvailablePhoneNumbers();
 
 			if (null == numbers) {
-
-				request.setAttribute("numbers", numbers);
 				request.setAttribute("NumbersMessage", "Something went wrong, please try again later");
 				RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.USER_REGISTRATION_STEP_TWO);
 				dispatcher.forward(request, response);
@@ -41,11 +39,8 @@ public class ViewAvailablePhoneNumberCommand implements Command {
 			numbers.toString();
 			HttpSession session = request.getSession(false);
 			session.setAttribute("numbers", numbers);
-			request.setAttribute("numbers", numbers);
 			request.setAttribute("NumbersMessage", "Please choose your new phone number");
-			
 			response.sendRedirect("controller?command=go-to-reg-step-two-page");
-
 		} catch (ServiceException e) {
 			e.printStackTrace();
 		}

@@ -17,6 +17,7 @@ import by.roma.telecom.controller.RequestParameterName;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
 import by.roma.telecom.service.UserService;
+import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
 public class UnblockUserCommand implements Command{
 
@@ -36,6 +37,8 @@ public class UnblockUserCommand implements Command{
 		}
 		
 		if (session != null && session.getAttribute("admin") != null) {
+			
+			SessionMessageCleaner.cleanMessageAttributes(session);
 			
 			userID = request.getParameter(RequestParameterName.REQ_PARAM_USER_ID);
 			

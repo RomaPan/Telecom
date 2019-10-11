@@ -29,18 +29,18 @@ public class Account implements Serializable {
 	public Account() {
 	}
 
-	public Account(int accountID, float accountBalance, boolean isBlocked, int callPlanID, String callPlanCreatedAt,
+	public Account(int accountID, float accountBalance, boolean blocked, int callPlanID, String callPlanCreatedAt,
 			String callPlanCeasedAt) {
 		this.accountID = accountID;
 		this.accountBalance = accountBalance;
-		this.blocked = isBlocked;
+		this.blocked = blocked;
 		this.callPlanID = callPlanID;
 		this.callPlanCreatedAt = callPlanCreatedAt;
 		this.callPlanCeasedAt = callPlanCeasedAt;
 	}
 
 	public Account(int userID, int accountID, int phoneNumberID, int callPlanID, float accountBalance,
-			String accountCreatedAt, String accountCeasedAt, boolean isBlocked, String phoneNumberConnectedAt,
+			String accountCreatedAt, String accountCeasedAt, boolean blocked, String phoneNumberConnectedAt,
 			String phoneNumberCeasedAt, String callPlanCreatedAt, String callPlanCeasedAt) {
 		super();
 		this.userID = userID;
@@ -50,20 +50,20 @@ public class Account implements Serializable {
 		this.accountBalance = accountBalance;
 		this.accountCreatedAt = accountCreatedAt;
 		this.accountCeasedAt = accountCeasedAt;
-		this.blocked = isBlocked;
+		this.blocked = blocked;
 		this.phoneNumberConnectedAt = phoneNumberConnectedAt;
 		this.phoneNumberCeasedAt = phoneNumberCeasedAt;
 		this.callPlanCreatedAt = callPlanCreatedAt;
 		this.callPlanCeasedAt = callPlanCeasedAt;
 	}
 
-	public Account(int accountID, float accountBalance, boolean isBlocked, int callPlanID, String callPlanCreatedAt,
+	public Account(int accountID, float accountBalance, boolean blocked, int callPlanID, String callPlanCreatedAt,
 			String callPlanCeasedAt, int phoneNumberID, String phoneNumberConnectedAt, String phoneNumberCeasedAt,
 			String accountCreatedAt, String accountCeasedAt) {
 
 		this.accountID = accountID;
 		this.accountBalance = accountBalance;
-		this.blocked = isBlocked;
+		this.blocked = blocked;
 		this.callPlanID = callPlanID;
 		this.accountCreatedAt = accountCreatedAt;
 		this.accountCeasedAt = accountCeasedAt;
@@ -72,6 +72,29 @@ public class Account implements Serializable {
 		this.phoneNumberCeasedAt = phoneNumberCeasedAt;
 		this.accountCreatedAt = accountCreatedAt;
 		this.accountCeasedAt = accountCeasedAt;
+	}
+	
+	public Account (int userID, int accountID, float accountBalance, boolean blocked, int callPlanID, String callPlanCreatedAt,
+			String callPlanCeasedAt, int phoneNumberID, String phoneNumberConnectedAt, String phoneNumberCeasedAt, String accountCreatedAt,
+			String accountCeasedAt, int accountPhoneNumber, String callPlanName, float callPlanRate , int callPlanMinutesLeft) {
+		
+		this.userID = userID;
+		this.accountID = accountID;
+		this.accountBalance = accountBalance;
+		this.blocked = blocked;
+		this.callPlanID = callPlanID;
+		this.callPlanCreatedAt = callPlanCreatedAt;
+		this.callPlanCeasedAt = callPlanCeasedAt;
+		this.phoneNumberID = phoneNumberID;
+		this.phoneNumberConnectedAt = phoneNumberConnectedAt;
+		this.phoneNumberCeasedAt = phoneNumberCeasedAt;
+		this.accountCreatedAt = accountCreatedAt;
+		this.accountCeasedAt = accountCeasedAt;
+		this.accountPhoneNumber = accountPhoneNumber;
+		this.callPlanName = callPlanName;
+		this.callPlanRate = callPlanRate;
+		this.callPlanMinutesLeft = callPlanMinutesLeft;
+		
 	}
 
 	public int getUserID() {

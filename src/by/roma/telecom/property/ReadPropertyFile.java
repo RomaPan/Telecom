@@ -23,6 +23,7 @@ public class ReadPropertyFile {
 	private String insertCallPlan;
 	
 	private String userSearchByID;
+	private String userSearchByEmailAndPassword;
 	private String userSearchByEmail;
 	private String userUpdateProfile;
 	private String userChangePass;
@@ -46,6 +47,10 @@ public class ReadPropertyFile {
 	private String connectPhoneNumberToAccount;
 	private String reservePhoneNumber;
 	private String viewAvailablePhoneNumbers;
+	private String disconnectPhoneNumberFromAccount;
+	private String getPhoneNumberIDByAccountID;
+	private String getAccountBalance;
+	private String updateAccountBalance;
 	
 
 	private ReadPropertyFile() {
@@ -71,7 +76,7 @@ public class ReadPropertyFile {
 			this.insertAccount = prop.getProperty("insertAccount");
 			this.insertUserAccount = prop.getProperty("insertUserAccount");
 			this.userSearchByID = prop.getProperty("userSearchByID");
-			this.userSearchByEmail = prop.getProperty("userSearchByEmail");
+			this.userSearchByEmailAndPassword = prop.getProperty("userSearchByEmailAndPassword");
 			this.userUpdateProfile = prop.getProperty("userUpdateProfile");
 			this.userChangePass = prop.getProperty("userChangePass");
 			this.accountAddCallPlan = prop.getProperty("accountAddCallPlan");
@@ -92,6 +97,11 @@ public class ReadPropertyFile {
 			this.changeUserBlockStatus = prop.getProperty("changeUserBlockStatus");
 			this.getListOfAllUsers = prop.getProperty("getListOfAllUsers");
 			this.changeAccountBlockStatus = prop.getProperty("changeAccountBlockStatus");
+			this.disconnectPhoneNumberFromAccount = prop.getProperty("disconnectPhoneNumberFromAccount");
+			this.getPhoneNumberIDByAccountID = prop.getProperty("getPhoneNumberIDByAccountID");
+			this.getAccountBalance = prop.getProperty("getAccountBalance");
+			this.updateAccountBalance = prop.getProperty("updateAccountBalance");
+			this.userSearchByEmail = prop.getProperty("userSearchByEmail");
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -156,8 +166,8 @@ public class ReadPropertyFile {
 		return userSearchByID;
 	}
 
-	public String getUserSearchByEmail() {
-		return userSearchByEmail;
+	public String getUserSearchByEmailAndPassword() {
+		return userSearchByEmailAndPassword;
 	}
 
 	public String getUserUpdateProfile() {
@@ -242,5 +252,25 @@ public class ReadPropertyFile {
 	
 	public String getChangeAccountBlockStatus() {
 		return changeAccountBlockStatus;
+	}
+	
+	public String getDisconnectPhoneNumberFromAccount() {
+		return disconnectPhoneNumberFromAccount;
+	}
+	
+	public String getPhoneNumberIDByAccountID() {
+		return getPhoneNumberIDByAccountID;
+	}
+	
+	public String getAccountBalance() {
+		return getAccountBalance;
+	}
+	
+	public String getUpdateAccountBalance() {
+		return updateAccountBalance;
+	}
+	
+	public String getUserSearchByEmail() {
+		return userSearchByEmail;
 	}
 }

@@ -44,21 +44,20 @@ public class RegistrationCommand implements Command {
 
 		User user;
 
-		
 		try {
 			user = userService.registration(name, surname, email, addressL1, addressL2, addressL3, pass);
 
 			if (null == user) {
-				request.setAttribute("message", "Failed to create an account, Please check your details and try again.");
-				
+				request.setAttribute("message",
+						"Failed to create an account, Please check your details and try again.");
 				RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.USER_REGISTRATION);
 				dispatcher.forward(request, response);
 				return;
 			}
 			request.getSession().invalidate();
-			
+
 			HttpSession session = request.getSession(true);
-			
+
 			session.setAttribute("user", user);
 			request.setAttribute("user", user);
 			response.sendRedirect("controller?command=get-phone-numbers");

@@ -15,54 +15,47 @@ import by.roma.telecom.controller.RequestParameterName;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
 import by.roma.telecom.service.UserService;
+import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
-
-public class SetUserAdminRoleCommand implements Command	{
+public class SetUserAdminRoleCommand implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(SetUserAdminRoleCommand.class);
-	
+
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		
+
 		User user;
 		String userID;
-		
+
 		HttpSession session = request.getSession(false);
-		
-		if (session.getAttribute("FindUserByIDMessage") != null ) {
-			session.removeAttribute("FindUserByIDMessage");
-		} else if (session.getAttribute("ChangeUserRoleMessage") != null) {
-			session.removeAttribute("ChangeUserRoleMessage");
-		}
-		
+
 		if (session != null && session.getAttribute("admin") != null) {
-			
+
+			SessionMessageCleaner.cleanMessageAttributes(session);
+
 			userID = request.getParameter(RequestParameterName.REQ_PARAM_USER_ID);
-			System.out.println("USER-ID: " + userID);
-			
+
 			if (userID.isEmpty()) {
 				session.setAttribute("ChangeUserRoleMessage", "No user ID selected");
 				response.sendRedirect("controller?command=go-to-admin-auth-page");
 				return;
 			}
-			
+
 			UserService userService = ServiceProvider.getInstance().getUserService();
-			
+
 			try {
 				user = userService.changeUserRole(userID);
-				
+
 				if (user == null) {
-					
+
 					session.setAttribute("ChangeUserRoleMessage", "Role was NOT changed");
 					response.sendRedirect("controller?command=go-to-admin-auth-page");
 				} else {
-					if (session.getAttribute("ChangeUserRoleMessage") != null ) {
-						session.removeAttribute("ChangeUserRoleMessage");
-					}
-					session.setAttribute("user", user);
+
+					session.setAttribute("userAdm", user);
 					session.setAttribute("ChangeUserRoleMessage", "Role was changed");
 					response.sendRedirect("controller?command=go-to-admin-auth-page");
-				}			
+				}
 			} catch (ServiceException e) {
 				LOGGER.error("Service Exception occurred: user role was not changed.");
 			}
@@ -71,7 +64,7 @@ public class SetUserAdminRoleCommand implements Command	{
 			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.LOGIN_PAGE);
 			dispatcher.forward(request, response);
 		}
-		
+
 	}
 
 }

@@ -11,24 +11,18 @@ import javax.servlet.http.HttpSession;
 import by.roma.telecom.command.Command;
 import by.roma.telecom.controller.JSPPageName;
 
-public class GoToAuthAdminPageCommand implements Command {
+public class GoToPaginationCommand implements Command{
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+		
 		HttpSession session = request.getSession(false);
-
+		
 		if (session != null && session.getAttribute("admin") != null) {
-
-			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.ADMIN_AUTH_PAGE);
-			dispatcher.forward(request, response);
-
-		} else {
-			request.setAttribute("LoginError", "Please sign in to access this part of the website.");
-			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.LOGIN_PAGE);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.PAGINATION);
 			dispatcher.forward(request, response);
 		}
-
+		
 	}
 
 }

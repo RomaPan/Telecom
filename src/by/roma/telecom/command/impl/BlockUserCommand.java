@@ -17,53 +17,49 @@ import by.roma.telecom.controller.RequestParameterName;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
 import by.roma.telecom.service.UserService;
+import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
-public class BlockUserCommand implements Command{
+public class BlockUserCommand implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(SetUserAdminRoleCommand.class);
-	
+
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		
+
 		User user;
 		String userID;
-		
+
 		HttpSession session = request.getSession(false);
-		
-		if (session.getAttribute("FindUserByIDMessage") != null ) {
-			session.removeAttribute("FindUserByIDMessage");
-		} else if (session.getAttribute("ChangeUserRoleMessage") != null) {
-			session.removeAttribute("ChangeUserRoleMessage");
-		}
-		
+
 		if (session != null && session.getAttribute("admin") != null) {
-			
+
+			SessionMessageCleaner.cleanMessageAttributes(session);
+
 			userID = request.getParameter(RequestParameterName.REQ_PARAM_USER_ID);
-			
-			
+
 			if (userID.isEmpty()) {
 				session.setAttribute("ChangeUserRoleMessage", "No user ID selected");
 				response.sendRedirect("controller?command=go-to-admin-auth-page");
 				return;
 			}
-			
+
 			UserService userService = ServiceProvider.getInstance().getUserService();
-			
+
 			try {
 				user = userService.blockUser(userID);
-				
+
 				if (user == null) {
-					
+
 					session.setAttribute("BlockUserMessage", "Request failed, try again");
 					response.sendRedirect("controller?command=go-to-admin-auth-page");
 				} else {
-					if (session.getAttribute("BlockUserMessage") != null ) {
+					if (session.getAttribute("BlockUserMessage") != null) {
 						session.removeAttribute("BlockUserMessage");
 					}
 					session.setAttribute("user", user);
 					session.setAttribute("BlockUserMessage", "user is blocked");
 					response.sendRedirect("controller?command=go-to-admin-auth-page");
-				}			
+				}
 			} catch (ServiceException e) {
 				LOGGER.error("Service Exception occurred: failed to block user.");
 			}

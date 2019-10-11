@@ -58,6 +58,18 @@ public final class ConnectionPool {
 		return null;
 	}
 
+	public void releaseConnection(Connection connection) {
+		try {
+			connection.setAutoCommit(true);
+			takenConnectionQueue.remove(connection);
+			availableConnectionQueue.offer(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 	public void releaseConnection(Connection connection, Statement statement, ResultSet resultSet) {
 		try {
 			if (resultSet != null) {

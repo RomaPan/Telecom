@@ -115,10 +115,10 @@ public class UserServiceImpl implements UserService {
 	public User searchByID(String userID) throws ServiceException {
 		User user;
 		int id;
-		
+
 		id = Integer.parseInt(userID);
 		UserDao userDao = DaoProvider.getInstance().getUserDao();
-		
+
 		try {
 			user = userDao.searchUserByID(id);
 			return user;
@@ -126,7 +126,6 @@ public class UserServiceImpl implements UserService {
 			throw new ServiceException(e);
 		}
 	}
-
 
 	@Override
 	public List<String> getAvailablePhoneNumbers() throws ServiceException {
@@ -149,7 +148,7 @@ public class UserServiceImpl implements UserService {
 		int id;
 		id = Integer.parseInt(userID);
 		UserDao userDao = DaoProvider.getInstance().getUserDao();
-		
+
 		try {
 			user = userDao.changeUserRole(id);
 			return user;
@@ -164,7 +163,7 @@ public class UserServiceImpl implements UserService {
 		int id;
 		id = Integer.parseInt(userID);
 		UserDao userDao = DaoProvider.getInstance().getUserDao();
-		
+
 		try {
 			user = userDao.blockUser(id);
 			return user;
@@ -179,7 +178,7 @@ public class UserServiceImpl implements UserService {
 		int id;
 		id = Integer.parseInt(userID);
 		UserDao userDao = DaoProvider.getInstance().getUserDao();
-		
+
 		try {
 			user = userDao.unblockUser(id);
 			return user;
@@ -192,19 +191,33 @@ public class UserServiceImpl implements UserService {
 	public List<User> getListOfAllUsers() throws ServiceException {
 		List<User> usersList;
 		UserDao userDao = DaoProvider.getInstance().getUserDao();
-		
+
 		try {
 			usersList = userDao.getListOfAllUsers();
 			return usersList;
-		}catch (DaoException e) {
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	@Override
+	public User searchByEmail(String userEmail) throws ServiceException {
+		User user;
+
+		UserDao userDao = DaoProvider.getInstance().getUserDao();
+
+		try {
+			user = userDao.searchUserByEmail(userEmail);
+			return user;
+
+		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
 	}
 
 	@Override
 	public User deleteUser(String userID) throws ServiceException {
-		
+
 		return null;
 	}
-
 }

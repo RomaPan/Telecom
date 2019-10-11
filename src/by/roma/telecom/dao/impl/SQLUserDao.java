@@ -24,8 +24,8 @@ public class SQLUserDao implements UserDao {
 	public User authorization(String email, String password) throws DaoException {
 
 		User user;
-		String searchUserByEmail;
-		searchUserByEmail = rpf.getUserSearchByEmail();
+		String searchUserByEmailAndPassword;
+		searchUserByEmailAndPassword = rpf.getUserSearchByEmailAndPassword();
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -34,7 +34,7 @@ public class SQLUserDao implements UserDao {
 			cp = ConnectionPool.getInstance();
 			con = cp.takeConnection();
 			con.setAutoCommit(false);
-			ps = con.prepareStatement(searchUserByEmail);
+			ps = con.prepareStatement(searchUserByEmailAndPassword);
 
 			ps.setString(1, email);
 			ps.setString(2, password);
@@ -53,28 +53,27 @@ public class SQLUserDao implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				con.commit();
 				rs.close();
 				ps.close();
+				cp.releaseConnection(con, ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
-			cp.releaseConnection(con, ps);
 		}
-		return null;
 	}
 
 	@Override
 	public User registration(String name, String surname, String email, String addressL1, String addressL2,
 			String addressL3, String pass) throws DaoException {
 
-		String insertUserCommand;
-		String insertAccountCommand;
-		String insertUserAccountCommand;
-		String searchUserByEmail;
+		String insertUser;
+		String insertAccount;
+		String insertUserAccount;
+		String searchUserByEmailAndPassword;
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -90,16 +89,19 @@ public class SQLUserDao implements UserDao {
 		sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		currentTime = sdf.format(dt);
 
-		insertUserCommand = rpf.getInsertUser();
-		insertAccountCommand = rpf.getInsertAccount();
-		insertUserAccountCommand = rpf.getInsertUserAccount();
-		searchUserByEmail = rpf.getUserSearchByEmail();
+		insertUser = rpf.getInsertUser();
+		insertAccount = rpf.getInsertAccount();
+		insertUserAccount = rpf.getInsertUserAccount();
+		searchUserByEmailAndPassword = rpf.getUserSearchByEmailAndPassword();
 
 		try {
 			con = cp.takeConnection();
+			
+			
 			con.setAutoCommit(false);
 
-			ps = con.prepareStatement(insertUserCommand); // inserting user to "users" table
+			
+			ps = con.prepareStatement(insertUser);
 			ps.setString(1, name);
 			ps.setString(2, surname);
 			ps.setString(3, addressL1);
@@ -111,67 +113,62 @@ public class SQLUserDao implements UserDao {
 			ps.setBoolean(9, false);
 			ps.executeUpdate();
 			ps.close();
-
 			con.commit();
 
+			
 			con.setAutoCommit(false);
 
-			ps = con.prepareStatement(searchUserByEmail);
+			
+			ps = con.prepareStatement(searchUserByEmailAndPassword);
 			ps.setString(1, email);
 			ps.setString(2, pass);
-
-			rs = ps.executeQuery(); // obtaining user's new ID in DB
-
-			rs.next();
+			rs = ps.executeQuery(); 
+			rs.next();			
 			user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
 					rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
 			user.toString();
-
 			rs.close();
 			ps.close();
 			con.commit();
 
+			
 			con.setAutoCommit(false);
-			ps = con.prepareStatement(insertAccountCommand); // inserting new account to "accounts" table using user's
-																// ID
+			
+			
+			ps = con.prepareStatement(insertAccount); 												
 			ps.setInt(1, user.getUserID());
 			ps.setFloat(2, 0.00F);
 			ps.setBoolean(3, false);
-
 			ps.executeUpdate();
 			con.commit();
 			ps.close();
 
+			
 			con.setAutoCommit(false);
-			ps = con.prepareStatement(insertUserAccountCommand);// inserting new users_accounts data to DB
+			
+			
+			
+			ps = con.prepareStatement(insertUserAccount);
 			ps.setInt(1, user.getUserID());
 			ps.setInt(2, user.getUserID());
 			ps.setString(3, currentTime);
 			ps.executeUpdate();
 			con.commit();
-			ps.close();
+			
 
 			return user;
 
 		} catch (SQLException e) {
-
-			try {
-				con.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-
+			throw new DaoException(e);
 		} finally {
 			try {
+				
 				ps.close();
-				rs.close();
 				cp.releaseConnection(con, ps);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-		return null;
 	}
 
 	@Override
@@ -202,7 +199,7 @@ public class SQLUserDao implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				if (rs != null) {
@@ -212,12 +209,11 @@ public class SQLUserDao implements UserDao {
 					st.close();
 				}
 				con.commit();
-				cp.releaseConnection(con, st);
+				cp.releaseConnection(con);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-		return null;
 	}
 
 	@Override
@@ -265,7 +261,7 @@ public class SQLUserDao implements UserDao {
 			return user;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				if (rs != null) {
@@ -277,11 +273,9 @@ public class SQLUserDao implements UserDao {
 				con.commit();
 				cp.releaseConnection(con, st);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-		return null;
-
 	}
 
 	@Override
@@ -335,7 +329,7 @@ public class SQLUserDao implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				if (rs != null) {
@@ -347,11 +341,9 @@ public class SQLUserDao implements UserDao {
 				con.commit();
 				cp.releaseConnection(con, st);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-
-		return null;
 	}
 
 	public List<String> getAvailablePhoneNumbers() throws DaoException {
@@ -375,19 +367,15 @@ public class SQLUserDao implements UserDao {
 			while (rs.next()) {
 				numbers.add(rs.getString(2));
 			}
-			System.out.println(numbers);
 			return numbers;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		}
-
-		return numbers;
 	}
 
 	@Override
 	public void deleteUser(int id) throws SQLException, ClassNotFoundException, DaoException {
 	}
-
 
 	@Override
 	public User changeUserRole(int id) throws DaoException {
@@ -421,7 +409,7 @@ public class SQLUserDao implements UserDao {
 			rs = st.executeQuery(userSearchByID + id);
 
 			rs.next();
-			
+
 			if (rs.getRow() == 0) {
 				System.out.println("---------ResultSet is empty-----------");
 				return null;
@@ -432,7 +420,7 @@ public class SQLUserDao implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				if (rs != null) {
@@ -447,10 +435,9 @@ public class SQLUserDao implements UserDao {
 				con.commit();
 				cp.releaseConnection(con, st);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-		return null;
 	}
 
 	@Override
@@ -485,7 +472,7 @@ public class SQLUserDao implements UserDao {
 			rs = st.executeQuery(userSearchByID + id);
 
 			rs.next();
-			
+
 			if (rs.getRow() == 0) {
 				System.out.println("---------ResultSet is empty-----------");
 				return null;
@@ -496,7 +483,7 @@ public class SQLUserDao implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				if (rs != null) {
@@ -511,10 +498,9 @@ public class SQLUserDao implements UserDao {
 				con.commit();
 				cp.releaseConnection(con, st);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-		return null;
 	}
 
 	@Override
@@ -548,7 +534,7 @@ public class SQLUserDao implements UserDao {
 			rs = st.executeQuery(userSearchByID + id);
 
 			rs.next();
-			
+
 			if (rs.getRow() == 0) {
 				System.out.println("---------ResultSet is empty-----------");
 				return null;
@@ -559,7 +545,7 @@ public class SQLUserDao implements UserDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		} finally {
 			try {
 				if (rs != null) {
@@ -574,18 +560,17 @@ public class SQLUserDao implements UserDao {
 				con.commit();
 				cp.releaseConnection(con, st);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new DaoException(e);
 			}
 		}
-		return null;
 	}
 
 	@Override
 	public List<User> getListOfAllUsers() throws DaoException {
-		
+
 		List<User> usersList = new ArrayList<>();
 		User user;
-		
+
 		String getListOfAllUsers;
 		Statement st = null;
 		ResultSet rs = null;
@@ -608,19 +593,54 @@ public class SQLUserDao implements UserDao {
 				System.out.println(user);
 				usersList.add(user);
 			}
-			System.out.println(usersList);
 			return usersList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(e);
 		}
-
-		return usersList;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+	@Override
+	public User searchUserByEmail(String email) throws DaoException {
+		String searchUserByEmail;
+		searchUserByEmail = rpf.getUserSearchByEmail();
+		Statement st = null;
+		ResultSet rs = null;
+		Connection con = null;
+		User user;
+
+		try {
+			con = cp.takeConnection();
+			con.setAutoCommit(false);
+			st = con.createStatement();
+			rs = st.executeQuery(searchUserByEmail + " '" + email + "'");
+			
+			if (rs.next() == false) {
+				return null;
+				
+			} else {
+				user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+						rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
+				System.out.println(user.toString());
+				
+				return user;
+			}
+
+		} catch (SQLException e) {
+			throw new DaoException(e);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (st != null) {
+					st.close();
+				}
+				con.commit();
+				cp.releaseConnection(con);
+			} catch (SQLException e) {
+				throw new DaoException(e);
+			}
+		}
+	}
+
 }

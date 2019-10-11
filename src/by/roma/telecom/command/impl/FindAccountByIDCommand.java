@@ -2,6 +2,7 @@ package by.roma.telecom.command.impl;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,22 +10,26 @@ import javax.servlet.http.HttpSession;
 
 import by.roma.telecom.bean.Account;
 import by.roma.telecom.command.Command;
+import by.roma.telecom.controller.JSPPageName;
 import by.roma.telecom.controller.RequestParameterName;
 import by.roma.telecom.service.AccountService;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
+import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
 public class FindAccountByIDCommand implements Command {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
+		Account account;
+		String accountID;
+
 		HttpSession session = request.getSession(false);
 
 		if (session != null && session.getAttribute("admin") != null) {
 
-			Account account;
-			String accountID;
+			SessionMessageCleaner.cleanMessageAttributes(session);
 
 			accountID = request.getParameter(RequestParameterName.REQ_PARAM_ACCOUNT_ID);
 
@@ -33,16 +38,9 @@ public class FindAccountByIDCommand implements Command {
 				response.sendRedirect("controller?command=go-to-admin-auth-page");
 				return;
 			} else {
-				
-				if (session.getAttribute("account") != null ) {
+
+				if (session.getAttribute("account") != null) {
 					session.removeAttribute("account");
-				}
-				if (session.getAttribute("FindAccountByIDMessage") != null ) {
-					session.removeAttribute("FindAccountByIDMessage");
-				}
-				
-				if (session.getAttribute("AccountBlockMessage") != null ) {
-					session.removeAttribute("AccountBlockMessage");
 				}
 
 				AccountService accountService = ServiceProvider.getInstance().getAccountService();
@@ -55,13 +53,17 @@ public class FindAccountByIDCommand implements Command {
 						response.sendRedirect("controller?command=go-to-admin-auth-page");
 						return;
 					}
-					
+
 					session.setAttribute("account", account);
 					response.sendRedirect("controller?command=go-to-admin-auth-page");
 				} catch (ServiceException e) {
 					e.printStackTrace();
 				}
 			}
+		} else {
+			request.setAttribute("Message", "Session timed out, please sign in");
+			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.LOGIN_PAGE);
+			dispatcher.forward(request, response);
 		}
 
 	}
