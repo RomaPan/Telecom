@@ -1,0 +1,16 @@
+by.roma.telecom.bean
+by.roma.telecom.command
+by.roma.telecom.command.impl
+by.roma.telecom.controller
+by.roma.telecom.custom.tag
+by.roma.telecom.dao
+by.roma.telecom.dao.impl
+by.roma.telecom.pooling
+by.roma.telecom.property
+by.roma.telecom.service
+by.roma.telecom.service.hashing
+by.roma.telecom.service.impl
+by.roma.telecom.service.validation
+by.roma.telecom.session.message.cleaner
+by.roma.telecom.test
+by.roma.telecom.test.jdbc
