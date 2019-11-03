@@ -24,6 +24,5 @@ public final class RequestParameterName {
 	public static final String REQ_PARAM_ACCOUNT_ID = "accountID";
 	public static final String REQ_PARAM_LANGUAGE = "language";
 	public static final String REQ_PARAM_REQUEST_LOCATION = "sitelocation";
-	
 
 }

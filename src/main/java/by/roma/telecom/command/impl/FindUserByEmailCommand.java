@@ -1,18 +1,14 @@
 package by.roma.telecom.command.impl;
 
 import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Logger;
-
 import by.roma.telecom.bean.User;
 import by.roma.telecom.command.Command;
-import by.roma.telecom.controller.JSPPageName;
+import by.roma.telecom.controller.RedirectCommandName;
 import by.roma.telecom.controller.RequestParameterName;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
@@ -20,8 +16,11 @@ import by.roma.telecom.service.UserService;
 import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
 public class FindUserByEmailCommand implements Command {
-
+	private UserService userService = ServiceProvider.getInstance().getUserService();
 	private static final Logger LOGGER = Logger.getLogger(FindUserByEmailCommand.class);
+	private static final String LOGGER_MESSAGE = "Service Exception occurred:  Failed to find user with email: ";
+	private static final String FIND_BY_EMAIL = "FindUserByEmailMessage";
+	private static final String FIND_BY_EMAIL_MESSAGE = "No user found with this Email";
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -29,43 +28,28 @@ public class FindUserByEmailCommand implements Command {
 		String userEmail;
 
 		HttpSession session = request.getSession(false);
-
-		if (session != null && session.getAttribute("admin") != null) {
-
-			SessionMessageCleaner.cleanMessageAttributes(session);
-
-			if (session.getAttribute("user") != null) {
-				session.removeAttribute("user");
-			}
-			userEmail = request.getParameter(RequestParameterName.REQ_PARAM_EMAIL);
-
-			if (userEmail == null) {
-				session.setAttribute("FindUserByEmailMessage", "Please enter user Email");
-				response.sendRedirect("controller?command=go-to-user-management-page");
-				return;
-			} else {
-				UserService userService = ServiceProvider.getInstance().getUserService();
-
-				try {
-					user = userService.searchByEmail(userEmail);
-
-					if (user == null) {
-						session.setAttribute("FindUserByEmailMessage", "No user found with this Email");
-						response.sendRedirect("controller?command=go-to-user-management-page");
-					} else {
-						session.setAttribute("user", user);
-						response.sendRedirect("controller?command=go-to-user-management-page");
-					}
-				} catch (ServiceException e) {
-					LOGGER.error("Service Exception occurred:  Failed to find user with email: " + userEmail);
-				}
-			}
-		} else {
-			request.setAttribute("Message", "Session timed out, please sign in");
-			RequestDispatcher dispatcher = request.getRequestDispatcher(JSPPageName.LOGIN_PAGE);
-			dispatcher.forward(request, response);
+		SessionMessageCleaner.cleanMessageAttributes(session);
+		if (session.getAttribute("user") != null) {
+			session.removeAttribute("user");
 		}
-
+		userEmail = request.getParameter(RequestParameterName.REQ_PARAM_EMAIL);
+		if (userEmail == null || userEmail.isBlank()) {
+			session.setAttribute(FIND_BY_EMAIL, FIND_BY_EMAIL_MESSAGE);
+			response.sendRedirect(RedirectCommandName.GO_TO_USER_MANAGEMENT_PAGE);
+			return;
+		} else {
+			try {
+				user = userService.searchByEmail(userEmail);
+				if (user == null) {
+					session.setAttribute(FIND_BY_EMAIL, FIND_BY_EMAIL_MESSAGE);
+					response.sendRedirect(RedirectCommandName.GO_TO_USER_MANAGEMENT_PAGE);
+				} else {
+					session.setAttribute("user", user);
+					response.sendRedirect(RedirectCommandName.GO_TO_USER_MANAGEMENT_PAGE);
+				}
+			} catch (ServiceException e) {
+				LOGGER.error(LOGGER_MESSAGE + userEmail);
+			}
+		}
 	}
-
 }

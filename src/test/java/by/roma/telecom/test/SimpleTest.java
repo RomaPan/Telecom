@@ -44,7 +44,8 @@ public class SimpleTest {
 	public void modifyUserDetails() {
 		User user;
 		try {
-			user = userDao.blockUser(10);
+			userDao.changeUserBlockStatus(10, true);
+			user = userDao.searchUserByID(10);
 			Assert.assertTrue(user.isBlocked());
 		} catch (DaoException e) {
 			LOGGER.error("Failed to update row in a database.", e);

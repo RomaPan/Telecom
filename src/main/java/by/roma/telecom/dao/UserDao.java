@@ -18,20 +18,6 @@ public interface UserDao {
 	 */
 	public User authorization(String login, String password) throws DaoException;
 	/**
-	 * Executes Insert and Select queries, assembles and returns bean User type object.
-     * @param name	    			User name as a String.
-     * @param surname				User surname as a String.
-     * @param email					User email as a String.
-     * @param addressL1				User house/street address as a String.
-     * @param addressL2				User city name as a String.
-     * @param addressL3				User ZIP/Postal Code as a String.
-     * @param pass					User password as String with simple SHA-256Hex hashing applied prior.
-     * @return 			   			User type object.
-     * @throws DaoException 		If SQLException occurs.
-	 */
-	public User registration(String name, String surname, String email, String addressL1, String addressL2,
-			String addressL3, String pass) throws DaoException;
-	/**
 	 * Executes Select and Update queries, assembles and returns updated bean object type User.
 	 * @param id	    			User id as an integer.
      * @param name	    			User name as a String.
@@ -43,7 +29,7 @@ public interface UserDao {
      * @return 			   			User type object.
      * @throws DaoException 		If SQLException occurs.
 	 */
-	public User updateUser(int id, String name, String surname, String email, String addressL1, String addressL2,
+	public void updateUser(int id, String name, String surname, String email, String addressL1, String addressL2,
 			String addressL3) throws DaoException;
 	/**
 	 * Executes Select and Update queries, assembles and returns updated bean User type object.
@@ -53,7 +39,7 @@ public interface UserDao {
      * @return 			   			User type object.
      * @throws DaoException 		If SQLException occurs.
 	 */
-	public User changePass(String id, String passOld, String passNew) throws DaoException;
+	public void changePass(String id, String passOld, String passNew) throws DaoException;
 	/**
 	 * Executes Select query, assembles and returns bean User type object.
 	 * @param id	    			User id as an integer.
@@ -75,7 +61,7 @@ public interface UserDao {
      * @return 			   			User type object.
      * @throws DaoException 		If SQLException occurs.
 	 */
-	public User changeUserRole(int id) throws DaoException;
+	public void changeUserRoleToAdmin(int id) throws DaoException;
 	/**
 	 * Executes Update query, applies changes value to "true" in database column name isBlocked. Blocked users
 	 * unable to login into the web application. Assembles and returns updated bean User type object.
@@ -83,15 +69,7 @@ public interface UserDao {
      * @return 			   			User type object.
      * @throws DaoException 		If SQLException occurs.
 	 */
-	public User blockUser(int id) throws DaoException;
-	/**
-	 * Executes Update query, applies changes value to "false" in database column name isBlocked. Assembles 
-	 * and returns updated bean User type object.
-	 * @param id	    			User id as an integer.
-     * @return 			   			User type object.
-     * @throws DaoException 		If SQLException occurs.
-	 */
-	public User unblockUser(int id) throws DaoException;
+	public void changeUserBlockStatus(int id, boolean status) throws DaoException;
 	/**
 	 * Executes Select query, gathers all records of users from database except those that are marked 
 	 * as administrators. Assembles a parameterized list type User, returns List type User.
@@ -136,7 +114,9 @@ public interface UserDao {
      * @throws DaoException 		If SQLException occurs.
 	 */
 	public void deleteUser(int id) throws DaoException;
+	
+	public User searchUserByEmailAndPassword(String email, String password) throws DaoException;
 
-
+	public void insertUserAccount(int accountID) throws DaoException;
 
 }

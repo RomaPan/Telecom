@@ -35,6 +35,20 @@ public class SQLUtilDao implements UtilDao {
 			return numbers;
 		} catch (SQLException e) {
 			throw new DaoException(e);
+		} finally {
+			try {
+				if(st != null) {
+					st.close();
+				}
+				if (rs != null) {
+					rs.close();
+				}
+				con.commit();
+				cp.releaseConnection(con);
+			}catch (SQLException e) {
+				throw new DaoException(e);
+			}
+			
 		}
 	}
 

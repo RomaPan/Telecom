@@ -61,7 +61,10 @@ public class ReadPropertyFile {
 	private String getListOfAllAccounts;
 	private String insertUserWithoutAutoIncrement;
 	private String deleteUserJunitTest;
-
+	
+	private String deleteAccount;
+	private String deleteUser;
+	
 	private ReadPropertyFile() {
 
 		Properties prop = null;
@@ -115,6 +118,8 @@ public class ReadPropertyFile {
 			this.getListOfAllAccounts = prop.getProperty("getListOfAllAccounts");
 			this.insertUserWithoutAutoIncrement = prop.getProperty("insertUserWithoutAutoIncrement");
 			this.deleteUserJunitTest = prop.getProperty("deleteUserJunitTest");
+			this.deleteAccount = prop.getProperty("deleteAccount");
+			this.deleteUser = prop.getProperty("deleteUser");
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Read Property File : No property file found!", e);
 		} catch (IOException e) {
@@ -300,5 +305,13 @@ public class ReadPropertyFile {
 	
 	public String getDeleteUserJunitTest() {
 		return deleteUserJunitTest;
+	}
+	
+	public String getDeleteAccount() {
+		return deleteAccount;
+	}
+	
+	public String getDeleteUser() {
+		return deleteUser;
 	}
 }

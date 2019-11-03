@@ -6,41 +6,40 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
-import by.roma.telecom.bean.Account;
 import by.roma.telecom.command.Command;
 import by.roma.telecom.controller.RedirectCommandName;
 import by.roma.telecom.controller.RequestParameterName;
 import by.roma.telecom.service.AccountService;
 import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.ServiceProvider;
+import by.roma.telecom.session.message.cleaner.SessionMessageCleaner;
 
-public class ChargeToAccountCommand implements Command {
+public class DeleteAccountCommand implements Command {
 	private AccountService accountService = ServiceProvider.getInstance().getAccountService();
-	private static final Logger LOGGER = Logger.getLogger(ChargeToAccountCommand.class);
-	private static final String LOGGER_MESSAGE = "Service Exception occurred:  Failed to apply charges to an accountID = ";
-	private static final String CHARGE_ACCOUNT = "ChargeToAccount";
-	private static final String CHARGE_ACCOUNT_FAIL = "No account ID selected";
-
+	private static final Logger LOGGER = Logger.getLogger(DeleteAccountCommand.class);
+	private static final String LOGGER_MESSAGE = "Service Exception occurred:  Failed to delete an account: ";
+	private static final String DELETE_ACCOUNT = "DeleteAccount";
+	private static final String DELETE_ACCOUNT_F = "No account ID selected";
+	private static final String DELETE_ACCOUNT_S = "No account ID selected";
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
-		Account account;
+		
 		String accountID;
-		float amount;
 		HttpSession session = request.getSession(false);
+		SessionMessageCleaner.cleanMessageAttributes(session);
 		accountID = request.getParameter(RequestParameterName.REQ_PARAM_ACCOUNT_ID);
-		amount = Float.parseFloat(request.getParameter(RequestParameterName.REQ_PARAM_CHARGE_AMOUNT));
 		if (accountID == null || accountID.isEmpty()) {
-			session.setAttribute(CHARGE_ACCOUNT, CHARGE_ACCOUNT_FAIL);
-			response.sendRedirect(RedirectCommandName.GO_TO_USER_AUTH_PAGE);
+			session.setAttribute(DELETE_ACCOUNT, DELETE_ACCOUNT_F);
+			response.sendRedirect(RedirectCommandName.GO_TO_ACCOUNT_MANAGEMENT_PAGE);
 			return;
 		}
 		try {
-			account = accountService.chargeToAccount(accountID, amount);
-			session.setAttribute("account", account);
-			response.sendRedirect(RedirectCommandName.GO_TO_USER_AUTH_PAGE);
-		} catch (ServiceException e) {
+			accountService.deleteAccount(accountID);
+			session.setAttribute(DELETE_ACCOUNT, DELETE_ACCOUNT_S);
+			response.sendRedirect(RedirectCommandName.GO_TO_ACCOUNT_MANAGEMENT_PAGE);
+		}catch (ServiceException e) {
 			LOGGER.error(LOGGER_MESSAGE + accountID);
 		}
 	}
+
 }

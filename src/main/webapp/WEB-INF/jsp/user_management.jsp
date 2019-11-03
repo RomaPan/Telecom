@@ -223,6 +223,7 @@
 					<c:out value="${FindUserByEmailMessage}" />
 					<c:out value="${ChangeUserRoleMessage }" />
 					<c:out value="${BlockUserMessage }" />	
+					<c:out value="${DeleteUserMessage }" />	
 					<c:out value="${FindUserByIDMessage }"/>		   
 				</span>
 			</p>
@@ -264,8 +265,9 @@
 			</c:choose>
 			<br/>
 			
-			<form>
-				<input type="hidden">
+			<form action="controller" method="post">
+				<input type="hidden" name="command" value="delete-user" />
+				<input type="hidden" name="userID" value="${sessionScope.user.userID}" />
 				<button>${delete_user_button }</button>
 			</form>
 

@@ -96,20 +96,18 @@ public class User implements Serializable {
 	public void setAdmin(boolean isAdmin) {
 		this.admin = isAdmin;
 	}
-	
+
 	public boolean isBlocked() {
 		return blocked;
 	}
-	
-	public void setBlocked (boolean isBlocked) {
+
+	public void setBlocked(boolean isBlocked) {
 		this.blocked = isBlocked;
 	}
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-
-
 
 	@Override
 	public int hashCode() {

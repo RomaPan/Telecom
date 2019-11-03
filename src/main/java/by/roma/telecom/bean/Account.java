@@ -73,11 +73,12 @@ public class Account implements Serializable {
 		this.accountCreatedAt = accountCreatedAt;
 		this.accountCeasedAt = accountCeasedAt;
 	}
-	
-	public Account (int userID, int accountID, float accountBalance, boolean blocked, int callPlanID, String callPlanCreatedAt,
-			String callPlanCeasedAt, int phoneNumberID, String phoneNumberConnectedAt, String phoneNumberCeasedAt, String accountCreatedAt,
-			String accountCeasedAt, int accountPhoneNumber, String callPlanName, float callPlanRate , int callPlanMinutesLeft) {
-		
+
+	public Account(int userID, int accountID, float accountBalance, boolean blocked, int callPlanID,
+			String callPlanCreatedAt, String callPlanCeasedAt, int phoneNumberID, String phoneNumberConnectedAt,
+			String phoneNumberCeasedAt, String accountCreatedAt, String accountCeasedAt, int accountPhoneNumber,
+			String callPlanName, float callPlanRate, int callPlanMinutesLeft) {
+
 		this.userID = userID;
 		this.accountID = accountID;
 		this.accountBalance = accountBalance;
@@ -94,7 +95,7 @@ public class Account implements Serializable {
 		this.callPlanName = callPlanName;
 		this.callPlanRate = callPlanRate;
 		this.callPlanMinutesLeft = callPlanMinutesLeft;
-		
+
 	}
 
 	public int getUserID() {
@@ -315,15 +316,14 @@ public class Account implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Account [userID=" + getUserID() + ", accountID=" + getAccountID() + ", phoneNumberID=" + getPhoneNumberID()
-				+ ", callPlanID=" + getCallPlanID() + ", accountBalance=" + getAccountBalance() + ", accountCreatedAt="
-				+ getAccountCreatedAt() + ", accountCeasedAt=" + getAccountCeasedAt() + ", isBlocked=" + isBlocked()
-				+ ", accountPhoneNumber=" + getAccountPhoneNumber() + ", phoneNumberConnectedAt=" + getPhoneNumberConnectedAt()
-				+ ", phoneNumberCeasedAt=" + getPhoneNumberCeasedAt() + ", callPlanName=" + getCallPlanName() + ", callPlanRate="
-				+ callPlanRate + ", callPlanMinutesLeft=" + callPlanMinutesLeft + ", callPlanCreatedAt="
-				+ getCallPlanCreatedAt() + ", callPlanCeasedAt=" + getCallPlanCeasedAt() + "]";
+		return "Account [userID=" + getUserID() + ", accountID=" + getAccountID() + ", phoneNumberID="
+				+ getPhoneNumberID() + ", callPlanID=" + getCallPlanID() + ", accountBalance=" + getAccountBalance()
+				+ ", accountCreatedAt=" + getAccountCreatedAt() + ", accountCeasedAt=" + getAccountCeasedAt()
+				+ ", isBlocked=" + isBlocked() + ", accountPhoneNumber=" + getAccountPhoneNumber()
+				+ ", phoneNumberConnectedAt=" + getPhoneNumberConnectedAt() + ", phoneNumberCeasedAt="
+				+ getPhoneNumberCeasedAt() + ", callPlanName=" + getCallPlanName() + ", callPlanRate=" + callPlanRate
+				+ ", callPlanMinutesLeft=" + callPlanMinutesLeft + ", callPlanCreatedAt=" + getCallPlanCreatedAt()
+				+ ", callPlanCeasedAt=" + getCallPlanCeasedAt() + "]";
 	}
-
-	
 
 }

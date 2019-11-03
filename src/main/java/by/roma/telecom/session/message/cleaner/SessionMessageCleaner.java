@@ -47,6 +47,8 @@ public class SessionMessageCleaner {
 			session.removeAttribute("AccountsListMessage");
 		}else if (session.getAttribute("ChangePhoneNumberFailed") != null) {
 			session.removeAttribute("ChangePhoneNumberFailed");
+		}else if (session.getAttribute("ConnPhoneNumberMessage") != null) {
+			session.removeAttribute("ConnPhoneNumberMessage");
 		}
 	}
 }

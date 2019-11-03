@@ -23,11 +23,9 @@ public interface UserService {
 	
 	public User changeUserRole(String userID) throws ServiceException;
 	
-	public User blockUser(String userID) throws ServiceException;
-	
-	public User unblockUser(String userID) throws ServiceException;
+	public User changeUserBlockStatus (String userID, boolean status) throws ServiceException;
 	
 	public List<User> getListOfAllUsers() throws ServiceException;
 	
-	public User deleteUser(String userID) throws ServiceException;
+	public void deleteUser(String userID) throws ServiceException;
 }

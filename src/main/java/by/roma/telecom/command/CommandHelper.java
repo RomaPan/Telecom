@@ -2,7 +2,6 @@ package by.roma.telecom.command;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import by.roma.telecom.command.impl.AuthorizationCommand;
 import by.roma.telecom.command.impl.BlockAccountCommand;
 import by.roma.telecom.command.impl.BlockUserCommand;
@@ -11,6 +10,8 @@ import by.roma.telecom.command.impl.ChangePhoneNumberCommand;
 import by.roma.telecom.command.impl.ClearListOfAllAccountsCommand;
 import by.roma.telecom.command.impl.ClearListOfAllUsersCommand;
 import by.roma.telecom.command.impl.ConnectPhoneNumberCommand;
+import by.roma.telecom.command.impl.DeleteAccountCommand;
+import by.roma.telecom.command.impl.DeleteUserCommand;
 import by.roma.telecom.command.impl.FindAccountByIDCommand;
 import by.roma.telecom.command.impl.FindAccountByPhoneNumberCommand;
 import by.roma.telecom.command.impl.FindUserByEmailCommand;
@@ -34,7 +35,6 @@ import by.roma.telecom.command.impl.GoToRegStepTwoCommand;
 import by.roma.telecom.command.impl.GoToRegistrationPageCommand;
 import by.roma.telecom.command.impl.GoToUserManagementPageCommand;
 import by.roma.telecom.command.impl.LocalizationCommand;
-import by.roma.telecom.command.impl.NoSuchCommand;
 import by.roma.telecom.command.impl.UpdateProfileCommand;
 import by.roma.telecom.command.impl.ViewAvailablePhoneNumberCommand;
 import by.roma.telecom.command.impl.RegistrationCommand;
@@ -51,7 +51,6 @@ public class CommandHelper {
 
 	public CommandHelper() {
 		commands.put(CommandName.AUTHORIZATION, new AuthorizationCommand());
-		commands.put(CommandName.NO_SUCH_COMMAND, new NoSuchCommand());
 		commands.put(CommandName.REGISTRATION, new RegistrationCommand());
 		commands.put(CommandName.UPDATE_PROFILE, new UpdateProfileCommand());
 		commands.put(CommandName.CHANGE_PASSWORD, new ChangePassCommand());
@@ -90,6 +89,8 @@ public class CommandHelper {
 		commands.put(CommandName.GO_TO_ACCOUNT_MANAGEMENT_PAGE, new GoToAccountManagementPageCommand());
 		commands.put(CommandName.GO_TO_USER_MANAGEMENT_PAGE, new GoToUserManagementPageCommand());
 		commands.put(CommandName.GO_TO_ACCOUNT_PAGINATION, new GoToAccountPaginationCommand());
+		commands.put(CommandName.DELETE_ACCOUNT, new DeleteAccountCommand());
+		commands.put(CommandName.DELETE_USER, new DeleteUserCommand());
 	}
 
 	public static CommandHelper getInstance() {
@@ -117,18 +118,15 @@ public class CommandHelper {
 			return command;
 		}
 	}
-	
-	
+
 	public static boolean contains(String commandName) {
 
-	    for (CommandName cn : CommandName.values()) {
-	        if (cn.name().equals(commandName.toUpperCase().replaceAll("-", "_"))) {
-	            return true;
-	        }
-	    }
-	    return false;
+		for (CommandName cn : CommandName.values()) {
+			if (cn.name().equals(commandName.toUpperCase().replaceAll("-", "_"))) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
-	
 
 }

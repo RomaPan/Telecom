@@ -16,7 +16,6 @@ import by.roma.telecom.property.ReadPropertyFile;
 import by.roma.telecom.dao.DaoException;
 
 public class SQLUserDao implements UserDao {
-
 	private static final ReadPropertyFile rpf = ReadPropertyFile.getInstance();
 	private static ConnectionPool cp = ConnectionPool.getInstance();
 
@@ -54,75 +53,6 @@ public class SQLUserDao implements UserDao {
 					ps.close();
 				}
 				con.commit();
-				cp.releaseConnection(con);
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
-		}
-	}
-
-	@Override
-	public User registration(String name, String surname, String email, String addressL1, String addressL2,
-			String addressL3, String pass) throws DaoException {
-		String insertAccount;
-		String insertUserAccount;
-		String searchUserByEmailAndPassword;
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		User user;
-		Date dt;
-		SimpleDateFormat sdf;
-		String currentTime;
-		dt = new Date();
-		sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		currentTime = sdf.format(dt);
-		insertAccount = rpf.getInsertAccount();
-		insertUserAccount = rpf.getInsertUserAccount();
-		searchUserByEmailAndPassword = rpf.getUserSearchByEmailAndPassword();
-		try {
-			insertUser(name, surname, email, addressL1, addressL2, addressL3, pass);
-
-			con = cp.takeConnection();
-			con.setAutoCommit(false);
-			ps = con.prepareStatement(searchUserByEmailAndPassword);
-			ps.setString(1, email);
-			ps.setString(2, pass);
-			rs = ps.executeQuery();
-			rs.next();
-			user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-					rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
-			rs.close();
-			ps.close();
-			con.commit();
-
-			con.setAutoCommit(false);
-			ps = con.prepareStatement(insertAccount);
-			ps.setInt(1, user.getUserID());
-			ps.setFloat(2, 0.00F);
-			ps.setBoolean(3, false);
-			ps.executeUpdate();
-			con.commit();
-			ps.close();
-
-			con.setAutoCommit(false);
-			ps = con.prepareStatement(insertUserAccount);
-			ps.setInt(1, user.getUserID());
-			ps.setInt(2, user.getUserID());
-			ps.setString(3, currentTime);
-			ps.executeUpdate();
-			con.commit();
-			return user;
-		} catch (SQLException e) {
-			throw new DaoException(e);
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
 				cp.releaseConnection(con);
 			} catch (SQLException e) {
 				throw new DaoException(e);
@@ -206,47 +136,30 @@ public class SQLUserDao implements UserDao {
 	}
 
 	@Override
-	public User updateUser(int id, String name, String surname, String email, String addressL1, String addressL2,
+	public void updateUser(int id, String name, String surname, String email, String addressL1, String addressL2,
 			String addressL3) throws DaoException {
-		String updateUserDetails;
-		String searchUserByID;
-		updateUserDetails = rpf.getUserUpdateProfile();
-		searchUserByID = rpf.getUserSearchByID();
+		String userUpdateProfile;
 		Connection con = null;
-		Statement st = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
-		User user;
+		userUpdateProfile = rpf.getUserUpdateProfile();
+
 		try {
 			con = cp.takeConnection();
 			con.setAutoCommit(false);
-			ps = con.prepareStatement(updateUserDetails + id);
+			ps = con.prepareStatement(userUpdateProfile);
 			ps.setString(1, name);
 			ps.setString(2, surname);
 			ps.setString(3, addressL1);
 			ps.setString(4, addressL2);
 			ps.setString(5, addressL3);
 			ps.setString(6, email);
+			ps.setInt(7, id);
 			ps.executeUpdate();
-			con.commit();
 
-			con.setAutoCommit(false);
-			st = con.createStatement();
-			rs = st.executeQuery(searchUserByID + id);
-			rs.next();
-			user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-					rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
-			return user;
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
 			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (st != null) {
-					st.close();
-				}
 				if (ps != null) {
 					ps.close();
 				}
@@ -259,17 +172,11 @@ public class SQLUserDao implements UserDao {
 	}
 
 	@Override
-	public User changePass(String id, String passOld, String passNew) throws DaoException {
+	public void changePass(String id, String passOld, String passNew) throws DaoException {
 		String userChangePass;
-		String userSearchByID;
-		int count;
 		Connection con = null;
-		Statement st = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
-		User user;
 		userChangePass = rpf.getUserChangePass();
-		userSearchByID = rpf.getUserSearchByID();
 		try {
 			con = cp.takeConnection();
 			con.setAutoCommit(false);
@@ -277,31 +184,11 @@ public class SQLUserDao implements UserDao {
 			ps.setString(1, passNew);
 			ps.setString(2, id);
 			ps.setString(3, passOld);
-			count = ps.executeUpdate();
-			con.commit();
-			if (count == 0) {
-				return null;
-			}
-			con.setAutoCommit(false);
-			st = con.createStatement();
-			rs = st.executeQuery(userSearchByID + id);
-			if (rs.next() == false) {
-				return null;
-			} else {
-				user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
-				return user;
-			}
+			ps.executeUpdate();		
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
 			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (st != null) {
-					st.close();
-				}
 				if (ps != null) {
 					ps.close();
 				}
@@ -312,18 +199,13 @@ public class SQLUserDao implements UserDao {
 			}
 		}
 	}
-
+	
 	@Override
-	public User changeUserRole(int id) throws DaoException {
+	public void changeUserRoleToAdmin(int id) throws DaoException {
 		String changeUserRoleToAdmin;
-		String userSearchByID;
 		Connection con = null;
-		Statement st = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
-		User user;
 		changeUserRoleToAdmin = rpf.getChangeUserRoleToAdmin();
-		userSearchByID = rpf.getUserSearchByID();
 		try {
 			con = cp.takeConnection();
 			con.setAutoCommit(false);
@@ -331,28 +213,10 @@ public class SQLUserDao implements UserDao {
 			ps.setBoolean(1, true);
 			ps.setInt(2, id);
 			ps.executeUpdate();
-			con.commit();
-
-			con.setAutoCommit(false);
-			st = con.createStatement();
-			rs = st.executeQuery(userSearchByID + id);
-			if (rs.next() == false) {
-				return null;
-			} else {
-				user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
-				return user;
-			}
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
 			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (st != null) {
-					st.close();
-				}
 				if (ps != null) {
 					ps.close();
 				}
@@ -363,98 +227,24 @@ public class SQLUserDao implements UserDao {
 			}
 		}
 	}
-
+	
 	@Override
-	public User blockUser(int id) throws DaoException {
+	public void changeUserBlockStatus(int id, boolean status) throws DaoException {
 		String changeUserBlockStatus;
-		String userSearchByID;
 		Connection con = null;
-		Statement st = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
-		User user;
 		changeUserBlockStatus = rpf.getChangeUserBlockStatus();
-		userSearchByID = rpf.getUserSearchByID();
 		try {
 			con = cp.takeConnection();
 			con.setAutoCommit(false);
 			ps = con.prepareStatement(changeUserBlockStatus);
-			ps.setBoolean(1, true);
+			ps.setBoolean(1, status);
 			ps.setInt(2, id);
 			ps.executeUpdate();
-			con.commit();
-
-			con.setAutoCommit(false);
-			st = con.createStatement();
-			rs = st.executeQuery(userSearchByID + id);
-			if (rs.next() == false) {
-				return null;
-			} else {
-				user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
-				return user;
-			}
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
 			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (st != null) {
-					st.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				con.commit();
-				cp.releaseConnection(con);
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
-		}
-	}
-
-	@Override
-	public User unblockUser(int id) throws DaoException {
-		String changeUserBlockStatus;
-		String userSearchByID;
-		Connection con = null;
-		Statement st = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		User user;
-		changeUserBlockStatus = rpf.getChangeUserBlockStatus();
-		userSearchByID = rpf.getUserSearchByID();
-		try {
-			con = cp.takeConnection();
-			con.setAutoCommit(false);
-			ps = con.prepareStatement(changeUserBlockStatus);
-			ps.setBoolean(1, false);
-			ps.setInt(2, id);
-			ps.executeUpdate();
-			con.commit();
-
-			con.setAutoCommit(false);
-			st = con.createStatement();
-			rs = st.executeQuery(userSearchByID + id);
-			if (rs.next() == false) {
-				return null;
-			} else {
-				user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
-				return user;
-			}
-		} catch (SQLException e) {
-			throw new DaoException(e);
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (st != null) {
-					st.close();
-				}
 				if (ps != null) {
 					ps.close();
 				}
@@ -504,7 +294,7 @@ public class SQLUserDao implements UserDao {
 			}
 		}
 	}
-
+	
 	@Override
 	public User searchUserByEmail(String email) throws DaoException {
 		String searchUserByEmail;
@@ -542,7 +332,7 @@ public class SQLUserDao implements UserDao {
 			}
 		}
 	}
-
+	
 	@Override
 	public int insertUserWithoutAI(int id, String name, String surname, String email, String addressL1,
 			String addressL2, String addressL3, String pass, boolean isAdmin, boolean isBlocked) throws DaoException {
@@ -589,7 +379,7 @@ public class SQLUserDao implements UserDao {
 		}
 
 	}
-
+	
 	@Override
 	public void deleteUser(int id) throws DaoException {
 		String deleteUserJunitTest;
@@ -615,5 +405,81 @@ public class SQLUserDao implements UserDao {
 			}
 		}
 	}
+	
+	@Override
+	public void insertUserAccount(int accountID) throws DaoException {
+		String insertUserAccount;
+		Connection con = null;
+		PreparedStatement ps = null;
+		Date dt;
+		SimpleDateFormat sdf;
+		String currentTime;
+		dt = new Date();
+		sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		currentTime = sdf.format(dt);
+		insertUserAccount = rpf.getInsertUserAccount();
+		try {
+			con = cp.takeConnection();
+			con.setAutoCommit(false);
+			ps = con.prepareStatement(insertUserAccount);
+			ps.setInt(1, accountID);
+			ps.setInt(2, accountID);
+			ps.setString(3, currentTime);
+			ps.executeUpdate();
+		}catch (SQLException e) {
+			throw new DaoException(e);
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				con.commit();
+				cp.releaseConnection(con);
+			} catch (SQLException e) {
+				throw new DaoException(e);
+			}
+		}
+		
+		
+	}
+	
+	@Override
+	public User searchUserByEmailAndPassword(String email, String password) throws DaoException {
+		String searchUserByEmailAndPassword;
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		User user;
+		searchUserByEmailAndPassword = rpf.getUserSearchByEmailAndPassword();
+		
+		try {
+			con = cp.takeConnection();
+			con.setAutoCommit(false);
+			ps = con.prepareStatement(searchUserByEmailAndPassword);
+			ps.setString(1, email);
+			ps.setString(2, password);
+			rs = ps.executeQuery();
+			rs.next();
+			user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+					rs.getString(6), rs.getString(7), rs.getBoolean(9), rs.getBoolean(10));
+			return user;
+		}catch (SQLException e) {
+			throw new DaoException(e);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				con.commit();
+				cp.releaseConnection(con);
+			} catch (SQLException e) {
+				throw new DaoException(e);
+			}
+		}
+	}
+	
 
 }

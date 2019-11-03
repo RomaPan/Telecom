@@ -159,7 +159,6 @@
 	<p>Website administration</p>
 	<p>Website statistics</p>
 	
-
 	<div class="admin-spacer"></div>
 
 	

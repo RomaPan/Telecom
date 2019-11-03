@@ -12,18 +12,17 @@ import by.roma.telecom.service.ServiceException;
 import by.roma.telecom.service.validation.UserDataValidator;
 
 public class UserServiceImpl implements UserService {
+	private UserDao userDao = DaoProvider.getInstance().getUserDao();
 
 	private static final UserDataValidator validator = UserDataValidator.getInstane();
 
 	@Override
 	public User authorization(String login, String pass) throws ServiceException {
-
+		User user;
 		if (!validator.check(login, pass)) {
 			return null;
 		} else {
 			pass = HashConversion.cipher(pass);
-			UserDao userDao = DaoProvider.getInstance().getUserDao();
-			User user;
 			try {
 				user = userDao.authorization(login, pass);
 			} catch (DaoException e) {
@@ -36,15 +35,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User registration(String name, String surname, String email, String addressL1, String addressL2,
 			String addressL3, String pass) throws ServiceException {
-
+		User user;
 		if (!validator.check(email, pass)) {
 			return null;
 		} else {
 			pass = HashConversion.cipher(pass);
-			UserDao userDao = DaoProvider.getInstance().getUserDao();
-			User user;
 			try {
-				user = userDao.registration(name, surname, email, addressL1, addressL2, addressL3, pass);
+				userDao.insertUser(name, surname, email, addressL1, addressL2, addressL3, pass);
+				user = userDao.searchUserByEmailAndPassword(email, pass);
+				userDao.insertUserAccount(user.getUserID());
 			} catch (DaoException e) {
 				throw new ServiceException(e);
 			}
@@ -55,34 +54,33 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(int id, String name, String surname, String email, String addressL1, String addressL2,
 			String addressL3) throws ServiceException {
+		User user;
 		if (!validator.checkProfileData(name, surname, email, addressL1, addressL2, addressL3)) {
 			return null;
-		} else {
-			UserDao userDao = DaoProvider.getInstance().getUserDao();
-			User user;
-			try {
-				user = userDao.updateUser(id, name, surname, email, addressL1, addressL2, addressL3);
-				return user;
-			} catch (DaoException e) {
-				throw new ServiceException(e);
-			}
+		}
+		try {
+			userDao.updateUser(id, name, surname, email, addressL1, addressL2, addressL3);
+			user = userDao.searchUserByID(id);
+			return user;
+		} catch (DaoException e) {
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
 	public User changePass(String id, String passOld, String passNew) throws ServiceException {
-
+		User user;
+		int userID;
+		
 		if (!validator.checkPassUpdate(passOld, passNew)) {
 			return null;
 		} else {
 			passOld = HashConversion.cipher(passOld);
 			passNew = HashConversion.cipher(passNew);
-
-			UserDao userDao = DaoProvider.getInstance().getUserDao();
-			User user;
-
+			userID = Integer.parseInt(id);
 			try {
-				user = userDao.changePass(id, passOld, passNew);
+				userDao.changePass(id, passOld, passNew);
+				user = userDao.searchUserByID(userID);
 				return user;
 			} catch (DaoException e) {
 				throw new ServiceException(e);
@@ -95,7 +93,6 @@ public class UserServiceImpl implements UserService {
 		User user;
 		int id;
 		id = Integer.parseInt(userID);
-		UserDao userDao = DaoProvider.getInstance().getUserDao();
 		try {
 			user = userDao.searchUserByID(id);
 			return user;
@@ -109,9 +106,9 @@ public class UserServiceImpl implements UserService {
 		User user;
 		int id;
 		id = Integer.parseInt(userID);
-		UserDao userDao = DaoProvider.getInstance().getUserDao();
 		try {
-			user = userDao.changeUserRole(id);
+			userDao.changeUserRoleToAdmin(id);
+			user = userDao.searchUserByID(id);
 			return user;
 		} catch (DaoException e) {
 			throw new ServiceException(e);
@@ -119,27 +116,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User blockUser(String userID) throws ServiceException {
+	public User changeUserBlockStatus (String userID, boolean status) throws ServiceException {
 		User user;
 		int id;
 		id = Integer.parseInt(userID);
-		UserDao userDao = DaoProvider.getInstance().getUserDao();
 		try {
-			user = userDao.blockUser(id);
-			return user;
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-
-	@Override
-	public User unblockUser(String userID) throws ServiceException {
-		User user;
-		int id;
-		id = Integer.parseInt(userID);
-		UserDao userDao = DaoProvider.getInstance().getUserDao();
-		try {
-			user = userDao.unblockUser(id);
+			userDao.changeUserBlockStatus(id, status);
+			user = userDao.searchUserByID(id);
 			return user;
 		} catch (DaoException e) {
 			throw new ServiceException(e);
@@ -149,7 +132,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> getListOfAllUsers() throws ServiceException {
 		List<User> usersList;
-		UserDao userDao = DaoProvider.getInstance().getUserDao();
 		try {
 			usersList = userDao.getListOfAllUsers();
 			return usersList;
@@ -161,7 +143,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User searchByEmail(String userEmail) throws ServiceException {
 		User user;
-		UserDao userDao = DaoProvider.getInstance().getUserDao();
 		try {
 			user = userDao.searchUserByEmail(userEmail);
 			return user;
@@ -171,7 +152,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User deleteUser(String userID) throws ServiceException {
-		return null;
+	public void deleteUser(String userID) throws ServiceException {
+		int id;
+		id = Integer.parseInt(userID);
+		try {
+			userDao.deleteUser(id);
+		}catch (DaoException e) {
+			throw new ServiceException(e);
+		}
 	}
+
+
 }

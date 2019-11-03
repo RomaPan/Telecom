@@ -191,7 +191,8 @@ public class RegistrationInfo implements Serializable {
 	public String toString() {
 		return "RegistrationInfo [customerID=" + getUserID() + ", name=" + getName() + ", surname=" + getSurname()
 				+ ", addressL1=" + getAddressL1() + ", addressL2=" + getAddressL2() + ", addressL3=" + getAddressL3()
-				+ ", email=" + getEmail() + ", password=" + getPassword() + ", isAdmin=" + isAdmin() + ", isBlocked=" + isBlocked() + "]";
+				+ ", email=" + getEmail() + ", password=" + getPassword() + ", isAdmin=" + isAdmin() + ", isBlocked="
+				+ isBlocked() + "]";
 	}
 
 }

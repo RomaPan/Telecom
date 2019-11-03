@@ -35,8 +35,7 @@
 	<listener>
 		<listener-class>by.roma.telecom.controller.ProjectRequestListener</listener-class>
 	</listener>
-
-
+	
 	<filter>
 		<display-name>CharsetFilter</display-name>
 		<filter-name>CharsetFilter</filter-name>
@@ -50,5 +49,37 @@
 		<filter-name>CharsetFilter</filter-name>
 		<url-pattern>/controller</url-pattern>
 	</filter-mapping>
+	
+	
+	<filter>
+		<display-name>SessionFilter</display-name>
+		<filter-name>SessionFilter</filter-name>
+		<filter-class>by.roma.telecom.controller.SessionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>SessionFilter</filter-name>
+		<url-pattern>/controller</url-pattern>
+	</filter-mapping>
 
+
+	<filter>
+		<display-name>AdminAuthFilter</display-name>
+		<filter-name>AdminAuthFilter</filter-name>
+		<filter-class>by.roma.telecom.controller.AdminAuthFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>AdminAuthFilter</filter-name>
+		<url-pattern>/controller</url-pattern>
+	</filter-mapping>
+
+
+	<filter>
+		<display-name>UserAuthFilter</display-name>
+		<filter-name>UserAuthFilter</filter-name>
+		<filter-class>by.roma.telecom.controller.UserAuthFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>UserAuthFilter</filter-name>
+		<url-pattern>/controller</url-pattern>
+	</filter-mapping>
 </web-app>
